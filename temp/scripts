@@ -1,0 +1,102 @@
+path to wsl =    \\wsl$\Ubuntu-20.04
+
+There is an additional part to this trick however — you can not use native Windows path formats for your host directory. Instead, you need to convert your path into a quasi-Linux format. The formatting rules (which I’ve noticed so far) are as so:
+You must replace any drives of the format C:\ with the new format //c/ , obviously replacing the C and c with the drive that is to be used.
+Any back-slash is to be replaced with a forward-slash.
+I’ve read online that, in theory, it is possible to remove all hard-coded values using the $(pwd) in PowerShell yet I’m unable to get that to work successfully. Writing my path once every few hours is okay enough for me.
+
+//C/Users/gulam/OneDrive/Desktop/cppweb/cppbox
+
+cd /usr/src/cppweb/hello_crow/build
+build
+
+docker build -t cppbox .
+
+docker run -ti cppbox:latest bash
+
+docker run -v C:\Users\gulam\OneDrive\Desktop\cppweb:/usr/src/cppweb -ti cppbox:latest bash
+
+docker run -v C:\Users\gulam\OneDrive\Desktop\cppweb:/usr/src/cppweb -p 8080:8080 -e PORT=8080 cppbox:latest /usr/src/cppweb/hello_crow/build/hello_crow
+
+docker run -v C:\Users\gulam\OneDrive\Desktop\cppweb:/usr/src/cppweb -p 8080:8080 -e PORT=8080 hello_crow:latest /usr/src/cppweb/hello_crow/build/hello_crow
+
+cd /usr/src/cppweb/hello_crow/build
+
+PS C:\Users\gulam> cd .\OneDrive\Desktop\cppweb\
+PS C:\Users\gulam\OneDrive\Desktop\cppweb> docker ps
+CONTAINER ID   IMAGE           COMMAND   CREATED              STATUS              PORTS     NAMES
+9613c730ba46   cppbox:latest   "bash"    About a minute ago   Up About a minute             angry_chaplygin
+PS C:\Users\gulam\OneDrive\Desktop\cppweb> docker cp . 9613c730ba46:/usr/src/cppweb
+PS C:\Users\gulam\OneDrive\Desktop\cppweb> docker commit 9613c730ba46 hello_crow:latest
+sha256:8744343317d9fe3445d480c759ba954fd170d1c51dbf5bf3f5c4b69432049839
+PS C:\Users\gulam\OneDrive\Desktop\cppweb> cd hello_crow
+PS C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow> heroku login
+ »   Warning: heroku update available from 7.53.0 to 7.56.1.
+heroku: Press any key to open up the browser to login or q to exit:
+Opening browser to https://cli-auth.heroku.com/auth/cli/browser/d016b6ea-171c-464b-b3e3-a7ff790d8c59?requestor=SFMyNTY.g2gDbQAAAAwxNzEuNzYuMC4xODJuBgBoclorewFiAAFRgA.Nwl7zN-za7zrA2hEIJzUdLTFTDo7Kga4BnJKRVDldsA
+Logging in... done
+Logged in as ghulamtahayasin@gmail.com
+PS C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow> heroku container:login
+ »   Warning: heroku update available from 7.53.0 to 7.56.1.
+Login Succeeded
+PS C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow> heroku create
+ »   Warning: heroku update available from 7.53.0 to 7.56.1.
+Creating app... done, ⬢ morning-plateau-73394
+https://morning-plateau-73394.herokuapp.com/ | https://git.heroku.com/morning-plateau-73394.git
+PS C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow> docker build -t hello_crow .
+[+] Building 0.5s (6/6) FINISHED
+ => [internal] load build definition from Dockerfile                                                               0.1s
+ => => transferring dockerfile: 118B                                                                               0.0s
+ => [internal] load .dockerignore                                                                                  0.0s
+ => => transferring context: 2B                                                                                    0.0s
+ => [internal] load metadata for docker.io/library/hello_crow:latest                                               0.0s
+ => [1/2] FROM docker.io/library/hello_crow                                                                        0.2s
+ => [2/2] WORKDIR /usr/src/cppweb/hello_crow/build                                                                 0.0s
+ => exporting to image                                                                                             0.1s
+ => => exporting layers                                                                                            0.0s
+ => => writing image sha256:7652d7ac1b9e18b88e803dc2d1d393015515e055feb130e344a67a7d67c7d742                       0.0s
+ => => naming to docker.io/library/hello_crow                                                                      0.0s
+
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them
+PS C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow> heroku container:push web -a morning-plateau-73394
+ »   Warning: heroku update available from 7.53.0 to 7.56.1.
+=== Building web (C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow\Dockerfile)
+[+] Building 0.4s (6/6) FINISHED
+ => [internal] load build definition from Dockerfile                                                               0.1s
+ => => transferring dockerfile: 118B                                                                               0.0s
+ => [internal] load .dockerignore                                                                                  0.0s
+ => => transferring context: 2B                                                                                    0.0s
+ => [internal] load metadata for docker.io/library/hello_crow:latest                                               0.0s
+ => [1/2] FROM docker.io/library/hello_crow                                                                        0.1s
+ => [2/2] WORKDIR /usr/src/cppweb/hello_crow/build                                                                 0.0s
+ => exporting to image                                                                                             0.1s
+ => => exporting layers                                                                                            0.0s
+ => => writing image sha256:543f29f6a06d68101a4212645756a9b6ecf10221fe5b6fad436cb614844136f4                       0.0s
+ => => naming to registry.heroku.com/morning-plateau-73394/web                                                     0.0s
+
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them
+=== Pushing web (C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow\Dockerfile)
+Using default tag: latest
+The push refers to repository [registry.heroku.com/morning-plateau-73394/web]
+5f70bf18a086: Pushed
+9fe98fc03d0c: Pushed
+e74e8f4c1a7d: Pushed
+b9e5f361b59f: Pushed
+064b0a1950f3: Pushed
+0fb77a5b6f05: Pushed
+88b7ccfb4390: Pushed
+b003325e95db: Pushed
+3cfedeb19614: Pushed
+9e0f305a3f23: Pushed
+39606564e8a4: Pushed
+e02b32b1ff99: Pushed
+f75e64f96dbc: Pushed
+8f7ee6d76fd9: Pushed
+c23711a84ad4: Pushed
+90d1009ce6fe: Pushed
+latest: digest: sha256:154039adf82bce3eb6e2b6431b5bfcc5db930cc937d58cf4c14d3aca42b23520 size: 3897
+Your image has been successfully pushed. You can now release it with the 'container:release' command.
+PS C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow> heroku container:release web -a morning-plateau-73394
+ »   Warning: heroku update available from 7.53.0 to 7.56.1.
+Releasing images web to morning-plateau-73394... done
+PS C:\Users\gulam\OneDrive\Desktop\cppweb\hello_crow> heroku open -a morning-plateau-73394
